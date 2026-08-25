@@ -11,6 +11,7 @@
     "desktop:v038:stage": "node scripts/dsh-desktop-v038.mjs stage",
     "desktop:v038:verify": "node scripts/dsh-desktop-v038.mjs verify",
     "desktop:v038:ui": "node scripts/verify-desktop-v038-ui.mjs",
+    "pretest": "npm run build --workspace @dsh-skill-manager/core --workspace @dsh-skill-manager/index-schema",
     "visual:build": "node scripts/build-visual-preview.mjs",
     "visual:serve": "node scripts/serve-visual-preview.mjs",
     "test": "vitest run",

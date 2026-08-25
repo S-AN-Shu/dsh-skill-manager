@@ -1,5 +1,9 @@
 # Lessons Learned
 
+## Tests Must Resolve Workspace Packages From A Clean Checkout
+
+The first public Linux CI run reached 199 passing tests but failed to collect the Host RPC suite because `@dsh-skill-manager/core` exports `dist/index.js` and CI had not built that private workspace yet. Windows passed only because an earlier local build left ignored `dist` files in place. Make `npm test` self-contained with a `pretest` build of workspace packages whose public exports point at generated output; do not rely on developer-machine artifacts or merely reorder one CI file.
+
 ## A Source Repository And An Installable DSH Bundle Are Different Boundaries
 
 A monorepo may contain a correct `dsh.bundle` child package while its root is not installable through `github:owner/repo`. DSH source installation also invokes `prepare`, which must be self-contained and explicitly allowed by pnpm policy. Publishing a verified child-package tarball avoids misleading one-line commands and avoids executing a remote build on the user's machine. Advertise GitHub source installation only after testing the fetched root from a fixed commit in a clean Profile.
