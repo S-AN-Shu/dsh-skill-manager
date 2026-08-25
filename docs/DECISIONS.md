@@ -30,7 +30,7 @@
 
 **Reason:** GitHub Trending HTML exposes repository slugs and trend metrics but not numeric owner identity. Core correctly emitted an unknown sentinel, while the Typert result schema rejected every candidate before it reached the Client. Historical-popular search was valid and returned 20 results in a live probe, but intermittent Windows proxy CONNECT/TLS latency could exceed the older 12-second boundary.
 
-**Boundaries:** A zero owner ID is display metadata only and cannot authorize media, Inspection, installation, provenance, or updates. Inspection and every trusted snapshot still resolve GitHub repository/owner identity. The 25-second deadline remains finite and abort-aware; it does not change Harness shell timeout behavior.
+**Boundaries:** A zero owner ID is display metadata only and cannot authorize media, Inspection, installation, provenance, or updates. Inspection and every trusted snapshot still resolve GitHub repository/owner identity. The 25-second repository-discovery deadline remains finite and abort-aware.
 
 ## 2026-08-19: Completed Bulk Notices Are Five-Second Dismissible Toasts
 
@@ -96,7 +96,7 @@
 
 **Reliability:** Retry only idempotent Host GET requests for a bounded set of transient connection codes and preserve the caller signal/deadline. Mount the install dialog synchronously before Inspection begins so network delay or failure cannot hide the review surface.
 
-**Compatibility:** No protocol increment or Host RPC replacement is required. v0.3.9, Harness timeout, PR, and publication remain deferred.
+**Compatibility:** No protocol increment or Host RPC replacement is required. v0.3.9, PR, and publication were deferred for this historical iteration.
 
 ## 2026-08-18: Marketplace Protocol 3 Uses Experimental GitHub Trending
 
@@ -106,7 +106,7 @@
 
 **Failure semantics:** Trending caches weekly and monthly independently for 30 minutes and may use at most 24-hour stale data. `live`, `cached`, `unavailable`, and `empty` remain distinct; a failed Trending request never silently becomes a recent-update or empty ranking.
 
-**Compatibility:** The Client requires protocol 3, `githubTrending`, and `skillClassification`; stale v0.3.8 Host processes receive a restart instruction. Desktop v0.3.9, Harness timeout work, PR creation, and publication remain deferred.
+**Compatibility:** The Client requires protocol 3, `githubTrending`, and `skillClassification`; stale v0.3.8 Host processes receive a restart instruction. Desktop v0.3.9, PR creation, and publication were deferred for this historical iteration.
 
 ## 2026-08-18: Explicit Provenance Batches And Recoverable Skill Deletion
 
@@ -509,6 +509,6 @@
 
 **Failure semantics:** Trending caches weekly and monthly independently for 30 minutes and may use at most 24-hour stale data. `live`, `cached`, `unavailable`, and `empty` remain distinct; a failed Trending request never silently becomes a recent-update or empty ranking.
 
-**Compatibility:** The Client requires protocol 3, `githubTrending`, and `skillClassification`; stale v0.3.8 Host processes receive a restart instruction. Desktop v0.3.9, Harness timeout work, PR creation, and publication remain deferred.
+**Compatibility:** The Client requires protocol 3, `githubTrending`, and `skillClassification`; stale v0.3.8 Host processes receive a restart instruction. Desktop v0.3.9, PR creation, and publication were deferred for this historical iteration.
 
 ## Historical decisions

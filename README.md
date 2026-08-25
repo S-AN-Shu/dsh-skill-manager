@@ -11,10 +11,6 @@ Version `0.1.0` provides:
 - update checks, conflict detection, backup, and rollback;
 - a DSH settings section and leading slash command/Skill prefix parsing.
 
-## Scope
-
-This repository does not implement or modify shell timeout behavior. Timeout investigation is a separate read-only project.
-
 ## Development Status
 
 The architecture and acceptance criteria are recorded under `docs/`. The managed Core, 24-method Protocol 5 Marketplace V2 Host protocol, metadata-only GitHub repository home, category-backed GitHub searches, on-demand fixed-commit inspection, repository-level batch analysis and installation, bounded media resolver, static risk hints, safe update/rollback, 30-day recoverable deletion, opt-in background maintenance, cross-agent synchronization, theme-adaptive React settings UI, ordinary Harness rc.2 adapter, and historical DSH Desktop v0.3.8 adapter are implemented in tested slices. skills.sh and Hugging Face remain optional discovery/provenance signals rather than installation authority. The central index schema is frozen, but no Indexer service ships yet.

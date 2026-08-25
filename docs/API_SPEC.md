@@ -205,4 +205,4 @@ The future catalog schema lives in `packages/index-schema` and defines `catalog-
 
 ## Compatibility
 
-The current adapter and runtime acceptance target DSH Desktop v0.3.8 with `@deepseek-ai/dsh@0.1.0-rc.6`. Desktop v0.3.9, publication, upstream PR creation, and Harness shell timeout changes are outside this iteration.
+The current adapter and runtime acceptance target DSH Desktop v0.3.8 with `@deepseek-ai/dsh@0.1.0-rc.6`. Desktop v0.3.9, publication, and upstream PR creation were outside this historical iteration.

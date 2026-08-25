@@ -65,7 +65,6 @@ DSH Skill Manager 是一个面向 DeepSeek Harness 与 DSH Desktop 的 Agent Ski
 - 不把 Skill 管理器扩展成任意脚本或 Shell 宏执行器。
 - 不执行远程 Skill 中包含的安装脚本或构建脚本。
 - 不静默替换用户已有的同名目录、符号链接或目录联接。
-- 不在本仓库中修复 Harness 的 Shell timeout；timeout 审计是独立任务。
 - 未经用户授权，不提交 Git commit、不推送、不发布、不创建 PR。
 
 ## 4. 项目总体架构
@@ -621,7 +620,6 @@ npm run visual:build
 
 - DSH Desktop v0.3.9 适配和验证。
 - GitHub 推送、Release 和上游 PR。
-- Harness timeout 修复。
 
 ## 17. 当前主要问题与根因
 
@@ -669,22 +667,6 @@ npm run visual:build
 3. 明确独立 Harness 插件发布包。
 4. 提取最小 DSH Desktop v0.3.8 适配提交。
 5. 用户授权后再推送独立仓库或提交桌面端 PR。
-
-### 独立任务：Harness timeout 审计
-
-timeout 项目应检查每种模式的：
-
-```text
-配置定义
-  → 参数传递
-  → Abort/取消信号
-  → 子进程终止
-  → handle.done 结束
-  → 工具结果返回
-  → UI 状态恢复
-```
-
-该审计不与 Skill Manager 功能提交混合，以便分别定位、验证和提交。
 
 ## 19. 开发与协作约束
 
