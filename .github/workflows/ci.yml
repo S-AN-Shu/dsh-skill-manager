@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm run verify:build --workspace dsh-skill-manager
+      - name: Verify release package can be created
+        run: |
+          mkdir -p output/release
+          npm pack --workspace dsh-skill-manager --pack-destination output/release
+          test -f output/release/dsh-skill-manager-0.1.0.tgz

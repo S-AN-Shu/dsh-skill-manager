@@ -1,0 +1,28 @@
+{
+  "name": "dsh-skill-manager-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "desktop:v038:stage": "node scripts/dsh-desktop-v038.mjs stage",
+    "desktop:v038:verify": "node scripts/dsh-desktop-v038.mjs verify",
+    "desktop:v038:ui": "node scripts/verify-desktop-v038-ui.mjs",
+    "visual:build": "node scripts/build-visual-preview.mjs",
+    "visual:serve": "node scripts/serve-visual-preview.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -b"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  }
+}

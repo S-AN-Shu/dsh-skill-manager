@@ -1,0 +1,16 @@
+node_modules/
+dist/
+coverage/
+.cache/
+.env
+.env.*
+!.env.example
+.learning/
+.planning/
+.playwright-cli/
+output/
+design-qa.md
+*.log
+*.tmp
+*.bak
+*.tsbuildinfo

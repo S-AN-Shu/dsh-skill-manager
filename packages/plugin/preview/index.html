@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DSH Skill Manager Visual Preview</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23247a5c' d='M3.5 1.5h6l3 3v10h-9zM9.5 1.5v3h3M6 8h4M6 11h4'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./preview.css" />
+  </head>
+  <body data-preview-theme="original">
+    <aside class="preview-controls" aria-label="预览控制">
+      <strong>DSH 0.3.8 语义主题预览</strong>
+      <div class="preview-theme-buttons" role="group" aria-label="预览主题">
+        <button type="button" data-theme="original" aria-pressed="true">原版</button>
+        <button type="button" data-theme="light" aria-pressed="false">亮色</button>
+        <button type="button" data-theme="dark" aria-pressed="false">暗色</button>
+        <button type="button" data-theme="system" aria-pressed="false">跟随系统</button>
+      </div>
+      <span id="preview-theme-status" aria-live="polite">当前：原版</span>
+    </aside>
+    <main id="root"></main>
+    <script type="module" src="./preview.js"></script>
+  </body>
+</html>

@@ -1,0 +1,36 @@
+export type SkillManagerErrorCode =
+  | "INVALID_SKILL_NAME"
+  | "INVALID_SKILL_DESCRIPTION"
+  | "SKILL_ALREADY_EXISTS"
+  | "SKILL_NOT_FOUND"
+  | "SKILL_SOURCE_INVALID"
+  | "UNSAFE_SKILL_BUNDLE"
+  | "SKILL_UPDATE_UNSUPPORTED"
+  | "SKILL_LOCAL_MODIFIED"
+  | "SKILL_ALREADY_CURRENT"
+  | "SKILL_SOURCE_MOVED"
+  | "SKILL_UPDATE_RISK_CONFIRMATION_REQUIRED"
+  | "SKILL_BACKUP_NOT_FOUND"
+  | "SKILL_BACKUP_INVALID"
+  | "SKILL_TRASH_NOT_FOUND"
+  | "SKILL_TRASH_INVALID"
+  | "SKILL_TRASH_EXPIRED"
+  | "INVALID_MARKETPLACE_INSTALL"
+  | "INVALID_PROVENANCE_CANDIDATES"
+  | "SKILL_PROVENANCE_CHANGED"
+  | "MARKETPLACE_BUNDLE_UNSAFE"
+  | "MARKETPLACE_BUNDLE_TOO_LARGE"
+  | "TARGET_UNSUPPORTED"
+  | "TARGET_NOT_CONFIGURED"
+  | "ACTIVE_PATH_CONFLICT"
+  | "REGISTRY_INVALID";
+
+export class SkillManagerError extends Error {
+  readonly code: SkillManagerErrorCode;
+
+  constructor(code: SkillManagerErrorCode, message: string, options?: ErrorOptions) {
+    super(message, options);
+    this.name = "SkillManagerError";
+    this.code = code;
+  }
+}
