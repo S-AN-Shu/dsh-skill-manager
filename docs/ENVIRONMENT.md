@@ -1,9 +1,10 @@
 # Environment
 
-## Public v0.1.0 Release Candidate - 2026-08-26
+## Public v0.1.0 Release - 2026-08-26
 
 - Build runtime: Node `24.11.1`, npm `11.6.2`; active global Harness `@deepseek-ai/dsh@0.1.1-rc.2`.
-- Release artifact: `output/release/dsh-skill-manager-0.1.0.tgz`, 16 files and 128,682 bytes before final GitHub publication.
+- Release artifact: `output/release/dsh-skill-manager-0.1.0.tgz`, 16 files and 128,682 bytes. GitHub Release and a fresh downloaded copy both have SHA-256 `46118AE5425BC68CA3020B0FF80DD770A497AC6C30A9843FC5C0D0EBCF98A38B`.
+- Public source: `https://github.com/S-AN-Shu/dsh-skill-manager`, clean public commit `5d1e3ea2319e57c3d7d64b4c7e174f00bb54d416`; release `https://github.com/S-AN-Shu/dsh-skill-manager/releases/tag/v0.1.0`; successful Linux CI run `https://github.com/S-AN-Shu/dsh-skill-manager/actions/runs/32871114313`.
 - Isolated package/Profile gate ran under a task-owned `%TEMP%/dsh-skill-manager-release-*` directory. It did not read or mutate the active `web` Profile, Skill library, sessions, credentials, settings, or Desktop installation.
 - The accidental help-only Profile name `release-smoke` was initialized under the default DSH home before isolation. It contains no installed plugin or user data; automated recursive cleanup was denied by the execution policy, so final handoff must disclose this harmless empty test Profile for optional manual removal.
 

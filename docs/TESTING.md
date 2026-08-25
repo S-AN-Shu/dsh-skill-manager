@@ -7,6 +7,7 @@
 - Full Vitest passed 25 files, 213 tests, and 8 historical skips. Typecheck, all workspace builds, and standalone bundle verification passed; the Client artifact is 175,886 bytes.
 - `npm pack --workspace dsh-skill-manager` produced `dsh-skill-manager-0.1.0.tgz`: 16 files, 128,682 packed bytes, 684,100 unpacked bytes, npm SHA-1 `4484e017dc6a23659ad84f21e32b67de3079ec09`.
 - With `DSH_HOME` isolated under `%TEMP%`, official `dsh plugin --profile web add <tgz>` installed the artifact under Harness `0.1.1-rc.2`. `dsh --profile web --dump-config` included `id: skill-manager`, `name: dsh-skill-manager`, and `config: {}`. A real `dsh web --no-open --host 127.0.0.1 --port 0` boot returned HTTP 200 for `/` and `/plugins/dsh-skill-manager/client.js`; the served Client length matched 175,886 bytes.
+- GitHub Actions Linux run `32871114313` passed `npm ci`, self-contained tests, typecheck, all workspace builds, standalone verification, and tarball creation. Downloading the published Release asset again produced the same SHA-256 `46118AE5425BC68CA3020B0FF80DD770A497AC6C30A9843FC5C0D0EBCF98A38B` as the locally verified upload.
 
 ## DSH Desktop v0.5.4 / Harness rc.2 Gate
 

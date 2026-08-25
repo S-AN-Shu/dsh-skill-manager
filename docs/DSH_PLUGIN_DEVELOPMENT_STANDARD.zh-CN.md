@@ -1,8 +1,8 @@
 # DeepSeek Harness 插件开发基线
 
-日期：2026-08-25
+日期：2026-08-26
 
-状态：已按 DeepSeek Harness `master` 文档核对；本项目合规修复与发布验证进行中
+状态：已按 DeepSeek Harness `master` 文档核对；本项目 `v0.1.0` 合规修复、隔离安装与公开 CI 已验证
 
 适用范围：原生 DSH Host、Web Client、DSH Desktop 的公开插件扩展面
 非目标：dsh-TUI 市场准入；未经运行验证的跨 Host 兼容声明
