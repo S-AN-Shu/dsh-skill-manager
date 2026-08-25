@@ -2,7 +2,7 @@
 
 ## Tests Must Resolve Workspace Packages From A Clean Checkout
 
-The first public Linux CI run reached 199 passing tests but failed to collect the Host RPC suite because `@dsh-skill-manager/core` exports `dist/index.js` and CI had not built that private workspace yet. Windows passed only because an earlier local build left ignored `dist` files in place. Make `npm test` self-contained with a `pretest` build of workspace packages whose public exports point at generated output; do not rely on developer-machine artifacts or merely reorder one CI file.
+The first public Linux CI run reached 199 passing tests but failed to collect the Host RPC suite because `@dsh-skill-manager/core` exports `dist/index.js` and CI had not built that private workspace yet. Windows passed only because an earlier local build left ignored `dist` files in place. Make `npm test` self-contained with a `pretest` build of workspace packages whose public exports point at generated output; do not rely on developer-machine artifacts or merely reorder one CI file. Test filesystem behavior with `tmpdir()`/`join()` instead of assuming a Windows drive path is absolute on Linux.
 
 ## A Source Repository And An Installable DSH Bundle Are Different Boundaries
 

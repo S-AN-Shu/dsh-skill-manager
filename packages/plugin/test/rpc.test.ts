@@ -49,11 +49,13 @@ describe("Skill Manager host RPC", () => {
   });
 
   it("resolves DSH enablement to the native user Skill root", () => {
-    expect(resolveDshRoot({}, { DSH_HOME: "C:/isolated/dsh-home" })).toBe(
-      join("C:/isolated/dsh-home", "skills")
+    const isolatedDshHome = join(tmpdir(), "isolated-dsh-home");
+    const customDshRoot = join(tmpdir(), "custom-dsh-skills");
+    expect(resolveDshRoot({}, { DSH_HOME: isolatedDshHome })).toBe(
+      join(isolatedDshHome, "skills")
     );
-    expect(resolveDshRoot({ dshRoot: "C:/custom/dsh-skills" }, {})).toBe(
-      join("C:/custom/dsh-skills")
+    expect(resolveDshRoot({ dshRoot: customDshRoot }, {})).toBe(
+      customDshRoot
     );
   });
 

@@ -2,7 +2,7 @@
 
 ## Public v0.1.0 Release Gate
 
-- The first clean Linux CI attempt exposed a hidden local-artifact dependency: 199 tests passed, but the Host RPC suite could not resolve the unbuilt private Core `dist` entry. Root `pretest` now builds Core and index-schema before Vitest so `npm test` has the same prerequisite on developer machines and CI.
+- The first clean Linux CI attempt exposed a hidden local-artifact dependency: 199 tests passed, but the Host RPC suite could not resolve the unbuilt private Core `dist` entry. Root `pretest` now builds Core and index-schema before Vitest so `npm test` has the same prerequisite on developer machines and CI. The next run exposed a Windows-only absolute-path fixture; the DSH-root regression now derives absolute paths from the platform `tmpdir()`.
 - Config/lifecycle focused tests passed 42 cases with 8 historical skips. The Config regression proves named and service-class schemas are identical, valid path data is retained, and invalid field types fail validation. Client regressions prove two stylesheet owners share one node and the last disposer removes it; `apply()` also releases the sheet after Remote disposal.
 - Full Vitest passed 25 files, 213 tests, and 8 historical skips. Typecheck, all workspace builds, and standalone bundle verification passed; the Client artifact is 175,886 bytes.
 - `npm pack --workspace dsh-skill-manager` produced `dsh-skill-manager-0.1.0.tgz`: 16 files, 128,682 packed bytes, 684,100 unpacked bytes, npm SHA-1 `4484e017dc6a23659ad84f21e32b67de3079ec09`.
