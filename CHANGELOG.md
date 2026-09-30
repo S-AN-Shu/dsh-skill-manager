@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0 - 2026-10-01
+
+- Adapted lazy Typert codecs, public client icons and declared dependencies to official DeepSeek Harness 0.2.0-rc.2.
+- Fixed repeated automatic-maintenance attempts, newly enabled updates after a check, and preferences changed during an in-flight check.
+- Restricted automatic updates to low/medium-risk snapshots; high/unknown risk requires manual review. Existing source pinning, local-edit protection, backups and rollback remain.
+- Improved compact header wrapping and maintenance-control readability in the official Desktop.
+- Verified official Host RPC and the installed Desktop management page. Install the prebuilt release with the Desktop-owned CLI; automatic maintenance runs only while the management page is open.
+
 ## 0.1.0 - 2026-08-26
 
 ### Added

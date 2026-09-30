@@ -4,6 +4,7 @@ const SERVICE_NAME = "skillManager";
 const jsonCodec = {
   mode: "strict" as const,
   typeSymbol: `${PACKAGE_NAME}/json`,
+  create() { return this.schema; },
   schema: {
     parse(value: unknown) {
       return value;

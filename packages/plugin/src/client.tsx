@@ -1,9 +1,9 @@
 import {
-  IconCloseOutline16,
-  IconPlusOutline16,
-  IconRefreshOutline16,
-  IconRightUpOutline14,
-  IconSearchOutline16
+  IconCloseOutlineMedium,
+  IconPlusOutlineMedium,
+  IconRefreshOutlineMedium,
+  IconRightUpOutlineMedium,
+  IconSearchOutlineMedium
 } from "@deepseek-ai/dsh-client-ui-primitives";
 import {
   type FormEvent,
@@ -317,6 +317,7 @@ export function SkillManagerPanel({ remote }: SkillManagerPanelProps) {
   const inspectionMediaSelectionTouched = useRef(false);
   const panelMounted = useRef(true);
   const maintenanceRunActive = useRef(false);
+  const maintenanceAttempted = useRef(new Set<MaintenanceKey>());
 
   useEffect(() => {
     if (notice === null || !isBulkCompletionNotice(notice)) return;
@@ -572,12 +573,16 @@ export function SkillManagerPanel({ remote }: SkillManagerPanelProps) {
   async function runAutomatedMaintenance() {
     if (maintenanceRunActive.current) return;
     const startedAt = new Date().toISOString();
-    const shouldCheck = maintenance.autoCheck.enabled && maintenanceDue(maintenance.autoCheck.lastRunAt);
-    const shouldUpdate = maintenance.autoUpdate.enabled && maintenanceDue(maintenance.autoUpdate.lastRunAt);
+    const shouldCheck = maintenance.autoCheck.enabled && maintenanceDue(maintenance.autoCheck.lastRunAt)
+      && !maintenanceAttempted.current.has("autoCheck");
+    const shouldUpdate = maintenance.autoUpdate.enabled && maintenanceDue(maintenance.autoUpdate.lastRunAt)
+      && !maintenanceAttempted.current.has("autoUpdate");
     if (!shouldCheck && !shouldUpdate) return;
+    if (shouldCheck) maintenanceAttempted.current.add("autoCheck");
+    if (shouldUpdate) maintenanceAttempted.current.add("autoUpdate");
     maintenanceRunActive.current = true;
     setMaintenanceRunning(true);
-    setMaintenanceStatus("自动维护正在后台运行");
+    setMaintenanceStatus("正在此管理页面检查上游更新…");
     const next: MaintenanceSettings = structuredClone(maintenance);
     const failures: string[] = [];
     try {
@@ -596,7 +601,8 @@ export function SkillManagerPanel({ remote }: SkillManagerPanelProps) {
       }
 
       if (shouldUpdate && freshCheckSucceeded) {
-        for (const check of freshChecks.filter((item) => item.status === "update-available")) {
+        for (const check of freshChecks.filter((item) => item.status === "update-available"
+          && (item.latestRisk?.risk === "low" || item.latestRisk?.risk === "medium"))) {
           try {
             const response = await remote.update({ schemaVersion: RPC_SCHEMA_VERSION, name: check.name });
             if (response.ok) {
@@ -609,12 +615,21 @@ export function SkillManagerPanel({ remote }: SkillManagerPanelProps) {
         }
         next.autoUpdate.lastRunAt = startedAt;
       }
-      writeMaintenanceSettings(next);
-      setMaintenance(next);
-      setMaintenanceStatus(failures.length === 0 ? "自动维护已完成" : `自动维护完成，${failures.length} 项失败`);
+      setMaintenance((current) => {
+        const merged = structuredClone(current);
+        if (shouldCheck) merged.autoCheck.lastRunAt = next.autoCheck.lastRunAt;
+        if (shouldUpdate) merged.autoUpdate.lastRunAt = next.autoUpdate.lastRunAt;
+        writeMaintenanceSettings(merged);
+        return merged;
+      });
+      const reviewCount = freshChecks.filter((item) => item.status === "update-available"
+        && item.latestRisk?.risk !== "low" && item.latestRisk?.risk !== "medium").length;
+      setMaintenanceStatus(failures.length === 0
+        ? `自动维护已完成${reviewCount > 0 ? `；${reviewCount} 项需要手动风险确认` : ""}`
+        : `自动维护完成，${failures.length} 项失败；可使用检查更新或更新按钮重试`);
       if (failures.length > 0) setError(`自动维护部分失败：${failures.join("；")}`);
     } catch (error) {
-      setMaintenanceStatus("自动维护失败，将在下次进入时重试");
+      setMaintenanceStatus("自动维护失败；可手动重试，或重新进入页面后再检查");
       setError(remoteErrorMessage(error));
     } finally {
       maintenanceRunActive.current = false;
@@ -624,8 +639,9 @@ export function SkillManagerPanel({ remote }: SkillManagerPanelProps) {
 
   useEffect(() => {
     if (loading || skills.length === 0 || maintenanceRunActive.current) return;
-    const due = (Object.keys(maintenance) as MaintenanceKey[])
-      .some((key) => maintenance[key].enabled && maintenanceDue(maintenance[key].lastRunAt));
+    const due = (["autoCheck", "autoUpdate"] as MaintenanceKey[])
+      .some((key) => maintenance[key].enabled && maintenanceDue(maintenance[key].lastRunAt)
+        && !maintenanceAttempted.current.has(key));
     if (due) void runAutomatedMaintenance();
   }, [loading, maintenance, skills]);
 
@@ -1639,13 +1655,13 @@ export function SkillManagerPanel({ remote }: SkillManagerPanelProps) {
                 title="搜索市场"
                 disabled={marketLoading || marketQuery.trim().length < 2}
               >
-                <IconSearchOutline16 aria-hidden="true" />
+                <IconSearchOutlineMedium aria-hidden="true" />
               </button>
             </form>
           ) : (
             <>
               <label className="dsm-search">
-                <IconSearchOutline16 aria-hidden="true" />
+                <IconSearchOutlineMedium aria-hidden="true" />
                 <span className="dsm-sr-only">搜索 Skill</span>
                 <input
                   type="search"
@@ -1682,7 +1698,7 @@ export function SkillManagerPanel({ remote }: SkillManagerPanelProps) {
               : view === "sync" ? void scanExternalSkills()
               : void loadSkills()}
           >
-            <IconRefreshOutline16 aria-hidden="true" />
+            <IconRefreshOutlineMedium aria-hidden="true" />
           </button>
           <button
             className="dsm-icon-button dsm-icon-button-primary"
@@ -1692,7 +1708,7 @@ export function SkillManagerPanel({ remote }: SkillManagerPanelProps) {
             aria-expanded={creating}
             onClick={openCreate}
           >
-            <IconPlusOutline16 aria-hidden="true" />
+            <IconPlusOutlineMedium aria-hidden="true" />
           </button>
         </div>
       </header>
@@ -1717,7 +1733,7 @@ export function SkillManagerPanel({ remote }: SkillManagerPanelProps) {
             <div className="dsm-utility-heading">
               <div>
                 <h3 id="dsm-maintenance-title">自动维护</h3>
-                <p>{maintenanceRunning ? "后台运行中；每项最多 24 小时一次" : maintenanceStatus ?? "默认关闭，勾选后进入本机管理时后台运行"}</p>
+                <p>{maintenanceRunning ? "正在检查更新" : maintenanceStatus ?? "尚未启用"}</p>
               </div>
               <div className="dsm-utility-actions">
                 <button
@@ -1851,7 +1867,7 @@ export function SkillManagerPanel({ remote }: SkillManagerPanelProps) {
               title="取消"
               onClick={() => setCreating(false)}
             >
-              <IconCloseOutline16 aria-hidden="true" />
+              <IconCloseOutlineMedium aria-hidden="true" />
             </button>
             <button className="dsm-command-button" type="submit" disabled={submitting}>
               {submitting ? "创建中" : "创建"}
@@ -1871,7 +1887,7 @@ export function SkillManagerPanel({ remote }: SkillManagerPanelProps) {
               title="关闭"
               onClick={() => setNotice(null)}
             >
-              <IconCloseOutline16 aria-hidden="true" />
+              <IconCloseOutlineMedium aria-hidden="true" />
             </button>
           </div>
         ) : null}
@@ -2007,7 +2023,7 @@ export function SkillManagerPanel({ remote }: SkillManagerPanelProps) {
                     aria-label={`在 GitHub 查看 ${repository.fullName}`}
                     title="查看来源"
                   >
-                    <IconRightUpOutline14 aria-hidden="true" />
+                    <IconRightUpOutlineMedium aria-hidden="true" />
                   </a>
                 </div>
               </li>
@@ -2300,8 +2316,8 @@ const MAINTENANCE_OPTIONS: ReadonlyArray<{
   label: string;
   description: string;
 }> = [
-  { key: "autoCheck", label: "自动检查更新", description: "读取已匹配 Skill 的最新固定快照" },
-  { key: "autoUpdate", label: "自动更新", description: "仅自动更新未本地修改且风险为低或中等的 Skill" }
+  { key: "autoCheck", label: "自动检查更新", description: "进入此页面时检查已匹配 GitHub 来源的最新固定快照，每 24 小时一次" },
+  { key: "autoUpdate", label: "自动更新", description: "进入此页面时更新；保护本地修改，高风险或未知风险需手动确认" }
 ];
 
 const EXTERNAL_SOURCE_FILTERS: ReadonlyArray<{ id: ExternalSourceFilter; label: string }> = [
@@ -2507,7 +2523,7 @@ function RepositoryInstallDialog(props: RepositoryInstallDialogProps) {
               : "项目信息已显示；仓库内容检查失败，可在卡片内重试。"}</p>
         </div>
         <button className="dsm-icon-button" type="button" aria-label="关闭安装确认" onClick={props.onClose}>
-          <IconCloseOutline16 aria-hidden="true" />
+          <IconCloseOutlineMedium aria-hidden="true" />
         </button>
       </header>
 
@@ -3015,6 +3031,7 @@ const CLIENT_CSS = `
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 16px;
   padding-bottom: 14px;
   border-bottom: 1px solid var(--dsm-border-2);
@@ -3109,7 +3126,7 @@ const CLIENT_CSS = `
 .dsm-market-more button:disabled { cursor: default; opacity: .5; }
 .dsm-market-empty strong { color: var(--dsm-label-primary); font-size: 14px; }
 .dsm-market-empty p { max-width: 460px; margin: 0; font-size: 12px; line-height: 1.6; }
-.dsm-title-row { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.dsm-title-row { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; min-width: 0; }
 .dsm-title-row h2 { margin: 0; font-size: 18px; line-height: 1.3; letter-spacing: 0; }
 .dsm-count {
   min-width: 24px;
@@ -3124,7 +3141,7 @@ const CLIENT_CSS = `
   font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
-.dsm-toolbar { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; min-width: 0; }
+.dsm-toolbar { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; flex: 1 1 340px; min-width: 0; }
 .dsm-market-search { min-width: 0; display: flex; align-items: center; gap: 8px; }
 .dsm-search {
   width: min(240px, 42vw);
@@ -3212,7 +3229,7 @@ const CLIENT_CSS = `
 .dsm-utility-actions { display: flex; align-items: center; justify-content: flex-end; gap: 6px; flex-wrap: wrap; }
 .dsm-utility-heading h3 { margin: 0; color: var(--dsm-label-primary); font-size: 12px; }
 .dsm-utility-heading p { margin: 3px 0 0; color: var(--dsm-label-tertiary); font-size: 10px; }
-.dsm-maintenance-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 8px; }
+.dsm-maintenance-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 8px; }
 .dsm-maintenance-options label {
   min-width: 0; display: grid; grid-template-columns: 15px minmax(0, 1fr); align-items: start; gap: 7px;
   padding: 7px 8px; border: 1px solid var(--dsm-border-2); border-radius: 6px; background: var(--dsm-bg-layer-1); cursor: pointer;
@@ -3220,7 +3237,7 @@ const CLIENT_CSS = `
 .dsm-maintenance-options input { width: 14px; height: 14px; margin: 1px 0 0; accent-color: var(--dsm-accent); }
 .dsm-maintenance-options strong, .dsm-maintenance-options small { display: block; }
 .dsm-maintenance-options strong { color: var(--dsm-label-primary); font-size: 11px; font-weight: 500; }
-.dsm-maintenance-options small { margin-top: 2px; color: var(--dsm-label-tertiary); font-size: 9px; line-height: 1.4; }
+.dsm-maintenance-options small { margin-top: 2px; color: var(--dsm-label-tertiary); font-size: 11px; line-height: 1.4; }
 .dsm-provenance-error { display: block; min-width: 0; overflow: hidden; color: var(--dsm-error); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
 .dsm-trash-toggle {
   width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0;

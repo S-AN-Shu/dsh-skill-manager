@@ -28,4 +28,4 @@ jobs:
         run: |
           mkdir -p output/release
           npm pack --workspace dsh-skill-manager --pack-destination output/release
-          test -f output/release/dsh-skill-manager-0.1.0.tgz
+          test -f output/release/dsh-skill-manager-0.2.0.tgz

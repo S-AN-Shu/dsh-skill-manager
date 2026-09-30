@@ -1,5 +1,15 @@
 # Task Status
 
+## Active Objective - Official Harness 0.2 Compatibility and Reliable Updates - 2026-09-30
+
+- Scope: port lazy Typert codecs and public client icons/dependencies to official 0.2.0-rc.2, improve automatic-maintenance feedback and stop repeated retries after partial failure. Preserve source pinning, local-change protection, risk review, backup and rollback.
+- Acceptance: tests, typecheck, build, real official Host RPC and Desktop UI, then publish the reviewed v0.2.0 prebuilt bundle. No installed Skill scripts are executed.
+- Status: implementation and local acceptance complete. Version 0.2.0 is installed in the official Desktop; the older 0.1.0-dsh02.1 was a local compiled adapter. Public release publication follows the independent CI gate.
+- Validation: full tests, typecheck, build and standalone bundle verification passed. Actual official Host RPC passed create/list/enable, native discovery, recoverable delete/restore, unmanaged-path conflicts and schema refusal. The official Desktop displays 124 discovered Skills with no alert or overflowing rows, and the heading fits on one line. No installed Skill script or paid model request was executed.
+- Update behavior: separate per-operation attempts prevent repeated failure requests and allow newly enabled automatic updates after a check. In-flight preference changes survive completion. Automatic updates accept only low/medium-risk snapshots; high/unknown risk requires manual review. Maintenance runs while the management page is open, not as a persistent scheduler.
+- Distribution: publish the prebuilt v0.2.0 tarball and verified public source. Preserve the private canonical history; the public commit descends only from the existing sanitized public main.
+
+
 ## Completed Objective - Remove Unrelated Cross-Project References - 2026-08-26
 
 - Objective: keep the public repository focused on DSH Skill Manager by removing references to a separate diagnostic project from README, overview, architecture history, compatibility notes, and archived task records.

@@ -504,13 +504,15 @@ function descriptor(method: string, request: z.ZodType, result: z.ZodType) {
       codec: {
         mode: "strict" as const,
         typeSymbol: `${PACKAGE_NAME}#${method}#request`,
-        schema: request
+        schema: request,
+        create: () => request
       }
     }],
     result: {
       mode: "strict" as const,
       typeSymbol: `${PACKAGE_NAME}#${method}#result`,
-      schema: result
+      schema: result,
+      create: () => result
     }
   };
 }

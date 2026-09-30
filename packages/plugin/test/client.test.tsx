@@ -5,11 +5,11 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@deepseek-ai/dsh-client-ui-primitives", () => ({
-  IconCloseOutline16: () => null,
-  IconPlusOutline16: () => null,
-  IconRefreshOutline16: () => null,
-  IconRightUpOutline14: () => null,
-  IconSearchOutline16: () => null
+  IconCloseOutlineMedium: () => null,
+  IconPlusOutlineMedium: () => null,
+  IconRefreshOutlineMedium: () => null,
+  IconRightUpOutlineMedium: () => null,
+  IconSearchOutlineMedium: () => null
 }));
 
 import {
@@ -34,6 +34,53 @@ import type {
 afterEach(() => {
   cleanup();
   window.localStorage.clear();
+});
+
+it("does not retry failed automatic checks on every state change", async () => {
+  const checkUpdates = vi.fn().mockResolvedValue({schemaVersion:1,ok:false,error:{code:"GITHUB_RATE_LIMITED",message:"Fixture rate limit"}});
+  const remote: SkillManagerRemote = {list:vi.fn().mockResolvedValue({schemaVersion:1,ok:true,data:{skills:[githubSkill()]}}),create:vi.fn(),setEnabled:vi.fn(),checkUpdates,update:vi.fn(),listBackups:vi.fn(),rollback:vi.fn()};
+  window.localStorage.setItem("dsh-skill-manager:maintenance:v1",JSON.stringify({autoCheck:{enabled:true,lastRunAt:null},autoUpdate:{enabled:false,lastRunAt:null}}));
+  render(<SkillManagerPanel remote={remote}/>);
+  await screen.findByText(/Fixture rate limit/u);
+  const user=userEvent.setup();
+  await user.click(screen.getByRole("checkbox",{name:/自动检查更新/u}));
+  await user.click(screen.getByRole("checkbox",{name:/自动检查更新/u}));
+  expect(checkUpdates).toHaveBeenCalledTimes(1);
+});
+
+it("automatically updates only reviewed low or medium risk snapshots",async()=>{
+  const update=vi.fn().mockResolvedValue({schemaVersion:1,ok:true,data:{skill:githubSkill({name:"low-risk"}),backup:backup()}});
+  const remote: SkillManagerRemote = {list:vi.fn().mockResolvedValue({schemaVersion:1,ok:true,data:{skills:[githubSkill({name:"low-risk"}),githubSkill({name:"unknown-risk"})]}}),create:vi.fn(),setEnabled:vi.fn(),checkUpdates:vi.fn().mockResolvedValue({schemaVersion:1,ok:true,data:{checks:[updateCheck({name:"low-risk",latestRisk:{risk:"low",findings:[],scannerVersion:"fixture"}}),updateCheck({name:"unknown-risk",latestRisk:null})]}}),update,listBackups:vi.fn(),rollback:vi.fn()};
+  window.localStorage.setItem("dsh-skill-manager:maintenance:v1",JSON.stringify({autoCheck:{enabled:false,lastRunAt:null},autoUpdate:{enabled:true,lastRunAt:null}}));
+  render(<SkillManagerPanel remote={remote}/>);
+  await screen.findByText(/1 项需要手动风险确认/u);
+  expect(update).toHaveBeenCalledTimes(1);
+  expect(update).toHaveBeenCalledWith({schemaVersion:1,name:"low-risk"});
+});
+
+it("runs newly enabled automatic updates after an automatic check", async () => {
+  const update = vi.fn().mockResolvedValue({schemaVersion:1,ok:true,data:{skill:githubSkill(),backup:backup()}});
+  const checkUpdates = vi.fn().mockResolvedValue({schemaVersion:1,ok:true,data:{checks:[updateCheck({latestRisk:{risk:"low",findings:[],scannerVersion:"fixture"}})]}});
+  const remote: SkillManagerRemote = {list:vi.fn().mockResolvedValue({schemaVersion:1,ok:true,data:{skills:[githubSkill()]}}),create:vi.fn(),setEnabled:vi.fn(),checkUpdates,update,listBackups:vi.fn(),rollback:vi.fn()};
+  window.localStorage.setItem("dsh-skill-manager:maintenance:v1",JSON.stringify({autoCheck:{enabled:true,lastRunAt:null},autoUpdate:{enabled:false,lastRunAt:null}}));
+  render(<SkillManagerPanel remote={remote}/>);
+  await screen.findByText("自动维护已完成");
+  await userEvent.setup().click(screen.getByRole("checkbox",{name:/自动更新/u}));
+  await waitFor(() => expect(update).toHaveBeenCalledTimes(1));
+  expect(checkUpdates).toHaveBeenCalledTimes(2);
+});
+
+it("preserves preferences changed while automatic checks are running", async () => {
+  let finish!: (value: unknown) => void;
+  const checkUpdates = vi.fn().mockImplementation(() => new Promise(resolve => { finish = resolve; }));
+  const remote: SkillManagerRemote = {list:vi.fn().mockResolvedValue({schemaVersion:1,ok:true,data:{skills:[githubSkill()]}}),create:vi.fn(),setEnabled:vi.fn(),checkUpdates,update:vi.fn(),listBackups:vi.fn(),rollback:vi.fn()};
+  window.localStorage.setItem("dsh-skill-manager:maintenance:v1",JSON.stringify({autoCheck:{enabled:true,lastRunAt:null},autoUpdate:{enabled:false,lastRunAt:null}}));
+  render(<SkillManagerPanel remote={remote}/>);
+  await waitFor(() => expect(checkUpdates).toHaveBeenCalledTimes(1));
+  await userEvent.setup().click(screen.getByRole("checkbox",{name:/自动检查更新/u}));
+  await act(async () => { finish({schemaVersion:1,ok:true,data:{checks:[]}}); });
+  expect((screen.getByRole("checkbox",{name:/自动检查更新/u}) as HTMLInputElement).checked).toBe(false);
+  expect(JSON.parse(window.localStorage.getItem("dsh-skill-manager:maintenance:v1")!).autoCheck.enabled).toBe(false);
 });
 
 it("injects the client stylesheet idempotently", () => {
